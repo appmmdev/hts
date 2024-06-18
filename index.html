@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .employee-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            /* Ensure circular shape */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Employee List</h1>
+
+        <!-- Search Box -->
+        <div class="form-group row justify-content-end">
+            <div class="col-4">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search...">
+            </div>
+        </div>
+
+        <!-- Employee Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>National ID</th>
+                        <th>Registration Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                    <!-- Table rows will be dynamically populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch and display employee data
+        function fetchAndDisplayEmployees() {
+            fetch('data.json')
+                .then(response => response.json())
+                .then(data => {
+                    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+                    const filteredEmployees = data.filter(employee =>
+                        employee.name.toLowerCase().includes(searchInput) ||
+                        employee.position.toLowerCase().includes(searchInput) ||
+                        employee.nationalid.toLowerCase().includes(searchInput)
+                    );
+                    const employeeTableBody = document.getElementById('employeeTableBody');
+                    employeeTableBody.innerHTML = ''; // Clear previous content
+
+                    filteredEmployees.forEach((employee, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td><img src="${employee.image}" alt="${employee.name}'s Photo" class="employee-img"></td>
+                            <td>${employee.name}</td>
+                            <td>${employee.position}</td>
+                            <td>${employee.nationalid}</td>
+                            <td>${employee.reg_date}</td>
+                            <td>
+                                <a href="details.html?id=${employee.id}" class="btn btn-primary btn-sm">View Details</a>
+                            </td>
+                        `;
+                        employeeTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error loading JSON:', error));
+        }
+
+        // Event listener for search input
+        document.getElementById('searchInput').addEventListener('input', fetchAndDisplayEmployees);
+
+        // Initial load of employees
+        fetchAndDisplayEmployees();
+    </script>
+</body>
+
+</html>
